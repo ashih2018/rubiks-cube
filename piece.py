@@ -28,29 +28,25 @@ class Piece:
     # multiplies current position by a rotation matrix to move and rotate the
     # piece
     def rotate_x(self, direction):
-        direction = round(direction)
         rotation = np.matrix([[1, 0, 0],
                               [0, math.cos(direction), -math.sin(direction)],
                               [0, math.sin(direction), math.cos(direction)]])
-        self.position = rotation * self.position
+        self.position = self.position * rotation
 
     def rotate_y(self, direction):
-        direction = round(direction)
         rotation = np.matrix([[math.cos(direction), 0, math.sin(direction)],
                               [0, 1, 0],
                               [-math.sin(direction), 0, math.cos(direction)]])
-        self.position = rotation * self.position
+        self.position = self.position * rotation
 
     def rotate_z(self, direction):
         rotation = np.matrix([[math.cos(direction), -math.sin(direction), 0],
                               [math.sin(direction), math.cos(direction), 0],
                               [0, 0, 1]])
-        self.position = rotation * self.position
+        self.position = self.position * rotation
 
     def round(self):
-        position_list = list(np.array(self.position).reshape(-1,))
         self.position = self.position.round()
-        print(self.position)
 
     def get_location(self):
         curr = np.matrix([self.x, self.y, self.z]) * self.position

@@ -132,7 +132,7 @@ class Visualizer:
         pygame.time.wait(10)
 
     def animate(self, dir, face, angle):
-        animate_times = 1
+        animate_times = 6
         for i in range(animate_times):
             time.sleep(0.001)
             if dir == 'x':
@@ -143,6 +143,7 @@ class Visualizer:
                 self.cube.turn_z(face, angle/animate_times)
             self.draw_cube()
         self.cube.round()
+        self.draw_cube()
 
     # receives text input and turns cube and records it to output.txt
     def turn_cube(self, direction, w):
