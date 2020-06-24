@@ -1,5 +1,6 @@
 import numpy as np
 from OpenGL.GL import *
+import math
 
 vertices = [(-1, -1, -1), (1, -1, -1), (1, 1, -1), (-1, 1, -1),
             (-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1)]
@@ -24,24 +25,32 @@ class Piece:
         self.len = 0.5
         self.position = np.identity(3, int)
 
-    # multiplies current position by a rotation matrix to move and rotate the piece
+    # multiplies current position by a rotation matrix to move and rotate the
+    # piece
     def rotate_x(self, direction):
-        rotation = np.matrix([[1, 0, 0], [0, 0, direction], [0, -direction, 0]])
+        rotation = np.matrix([[1, 0, 0],
+                              [0, math.cos(direction), -math.sin(direction)],
+                              [0, math.sin(direction), math.cos(direction)]])
         self.position = self.position * rotation
 
     def rotate_y(self, direction):
-        rotation = np.matrix([[0, 0, -direction], [0, 1, 0], [direction, 0, 0]])
+        rotation = np.matrix([[math.cos(direction), 0, -math.sin(direction)],
+                              [0, 1, 0],
+                              [-math.sin(direction), 0, math.cos(direction)]])
         self.position = self.position * rotation
 
     def rotate_z(self, direction):
-        rotation = np.matrix([[0, direction, 0], [-direction, 0, 0], [0, 0, 1]])
+        rotation = np.matrix([[math.cos(direction), -math.sin(direction), 0],
+                              [math.sin(direction), math.cos(direction), 0],
+                              [0, 0, 1]])
         self.position = self.position * rotation
 
     def get_location(self):
         curr = np.matrix([self.x, self.y, self.z]) * self.position
         return curr.item(0), curr.item(1), curr.item(2)
 
-    # returns a 4x4 matrix of current rotation that can be passed into glMultMatrixf
+    # returns a 4x4 matrix of current rotation that can be passed into
+    # glMultMatrixf
     def get_matrix(self):
         dim = np.size(self.position, 1)
         matrix_array = np.array(self.position)
