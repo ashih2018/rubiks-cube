@@ -1,9 +1,12 @@
+import time
+import math
+import random
+
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from cube import Cube
-import random
 
 display_width = 1200
 display_height = 1000
@@ -14,6 +17,8 @@ MOVES = ['R', 'R\'', 'L', 'L\'', 'U', 'U\'', 'D', 'D\'', 'F', 'F\'', 'B', 'B\'']
 class Visualizer:
     def __init__(self):
         self.cube = Cube(-1, 2)
+        self.angle_x = 0
+        self.angle_y = 0
         self.clock = pygame.time.Clock()
         self.gameDisplay = pygame.display.set_mode \
             ((display_width, display_height), DOUBLEBUF | OPENGL)
@@ -52,8 +57,6 @@ class Visualizer:
         glMatrixMode(GL_PROJECTION)
         gluPerspective(45, (display_width / display_height), 0.1, 50)
 
-        angle_x = 0
-        angle_y = 0
         while True:
             # if cube is currently being scrambled, curr move returns the next move
             curr_move = self.cube.get_scramble()
@@ -101,57 +104,73 @@ class Visualizer:
             # manages rotation of entire cube
             keys = pygame.key.get_pressed()
             if keys[pygame.K_UP]:
-                angle_y -= 5
+                self.angle_y -= 5
             if keys[pygame.K_DOWN]:
-                angle_y += 5
+                self.angle_y += 5
             if keys[pygame.K_RIGHT]:
-                angle_x -= 5
+                self.angle_x -= 5
             if keys[pygame.K_LEFT]:
-                angle_x += 5
+                self.angle_x += 5
 
-            glClearColor(0.6, 0.6, 0.6, 0)
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+            self.draw_cube()
 
-            glMatrixMode(GL_MODELVIEW)
-            glLoadIdentity()
-            glTranslatef(0.0, 0.0, -15)
-            glRotatef(45, 1, 1, 0)
+    def draw_cube(self):
+        glClearColor(0.6, 0.6, 0.6, 0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-            glRotatef(angle_y, -1, 0, 0)
-            glRotatef(angle_x, 0, 1, 0)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        glTranslatef(0.0, 0.0, -15)
+        glRotatef(45, 1, 1, 0)
 
-            self.cube.show()
+        glRotatef(self.angle_y, -1, 0, 0)
+        glRotatef(self.angle_x, 0, 1, 0)
 
-            pygame.display.flip()
-            pygame.time.wait(10)
+        self.cube.show()
+
+        pygame.display.flip()
+        pygame.time.wait(10)
+
+    def animate(self, dir, face, angle):
+        animate_times = 1
+        for i in range(animate_times):
+            time.sleep(0.001)
+            if dir == 'x':
+                self.cube.turn_x(face, angle/animate_times)
+            elif dir == 'y':
+                self.cube.turn_y(face, angle/animate_times)
+            elif dir == 'z':
+                self.cube.turn_z(face, angle/animate_times)
+            self.draw_cube()
+        self.cube.round()
 
     # receives text input and turns cube and records it to output.txt
     def turn_cube(self, direction, w):
         write = w
         if direction == 'R\'':
-            self.cube.turn_x(1, 1)
+            self.animate('x', 1, -math.pi/2)
         elif direction == 'R':
-            self.cube.turn_x(1, -1)
+            self.animate('x', 1, math.pi/2)
         elif direction == 'L':
-            self.cube.turn_x(-1, 1)
+            self.animate('x', -1, -math.pi/2)
         elif direction == 'L\'':
-            self.cube.turn_x(-1, -1)
+            self.animate('x', -1, math.pi/2)
         elif direction == 'U\'':
-            self.cube.turn_y(1, 1)
+            self.animate('y', 1, -math.pi/2)
         elif direction == 'U':
-            self.cube.turn_y(1, -1)
+            self.animate('y', 1, math.pi/2)
         elif direction == 'D\'':
-            self.cube.turn_y(-1, -1)
+            self.animate('y', -1, math.pi/2)
         elif direction == 'D':
-            self.cube.turn_y(-1, 1)
+            self.animate('y', -1, -math.pi/2)
         elif direction == 'F\'':
-            self.cube.turn_z(1, 1)
+            self.animate('z', 1, -math.pi/2)
         elif direction == 'F':
-            self.cube.turn_z(1, -1)
+            self.animate('z', 1, math.pi/2)
         elif direction == 'B\'':
-            self.cube.turn_z(-1, -1)
+            self.animate('z', -1, math.pi/2)
         elif direction == 'B':
-            self.cube.turn_z(-1, 1)
+            self.animate('z', -1, -math.pi/2)
         else:
             print('Not a recognized character!')
             write = False

@@ -1,4 +1,5 @@
 from piece import Piece
+import math
 
 
 class Cube:
@@ -19,19 +20,19 @@ class Cube:
 
     # Rotates all cubes on the x axis
     def turn_x(self, layer, direction):
-        for qb in self.pieces:
-            if qb.get_location()[0] == layer:
-                qb.rotate_x(direction)
+        for piece in self.pieces:
+            if piece.get_location()[0] == layer:
+                piece.rotate_x(direction)
 
     def turn_y(self, layer, direction):
-        for qb in self.pieces:
-            if qb.get_location()[1] == layer:
-                qb.rotate_y(direction)
+        for piece in self.pieces:
+            if piece.get_location()[1] == layer:
+                piece.rotate_y(direction)
 
     def turn_z(self, layer, direction):
-        for qb in self.pieces:
-            if qb.get_location()[2] == layer:
-                qb.rotate_z(direction)
+        for piece in self.pieces:
+            if piece.get_location()[2] == layer:
+                piece.rotate_z(direction)
 
     # adds array of moves to scramble
     def add_moves(self, moves):
@@ -45,6 +46,10 @@ class Cube:
 
     # draws each piece in cube
     def show(self):
-        for qb in self.pieces:
-            qb.draw()
+        for piece in self.pieces:
+            piece.draw()
+
+    def round(self):
+        for piece in self.pieces:
+            piece.round()
 
